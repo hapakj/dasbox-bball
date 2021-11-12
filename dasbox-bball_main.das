@@ -8,6 +8,7 @@ enum BrickType
     Glass
     ArrowRight
     Jump
+    Bomb
 
 enum CollisionType
     None
@@ -44,11 +45,12 @@ var
     glass_texture: ImageHandle
     arrow_texture: ImageHandle
     jump_texture: ImageHandle
+    bomb_texture: ImageHandle
 
 let
     ball_color = make_color(0.7,0.7,1.0)
-    default_vel_y: float = 600.0
 
+    default_vel_y: float = 600.0
     default_acc: float2 = float2(0.0, 1800.0)
 
     acc_x: float = 1000.0
@@ -62,7 +64,7 @@ let
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 5
+    level_count = 6
     first_level = 1
 
     
@@ -103,8 +105,17 @@ def initialize
     glass_texture <- create_managed_image("glass.png")
     arrow_texture <- create_managed_image("arrow.png")
     jump_texture <- create_managed_image("jump.png")
+    bomb_texture <- create_managed_image("bomb.png")
     return
 
+def reset_acc_and_vel
+    if ball.vel.x > max_vel_x
+        ball.vel.x = max_vel_x
+    if ball.vel.x < -max_vel_x
+        ball.vel.x = -max_vel_x
+
+    acc = default_acc
+    return
 
 def handle_input(dt: float)
     if get_key(VK_ESCAPE)
@@ -117,12 +128,8 @@ def handle_input(dt: float)
         ball.vel.x += dt * acc_x
 
     if get_key(VK_LEFT) || get_key(VK_RIGHT)
-        if ball.vel.x > max_vel_x
-            ball.vel.x = max_vel_x
-        if ball.vel.x < -max_vel_x
-            ball.vel.x = -max_vel_x
+        reset_acc_and_vel()
 
-        acc = default_acc
     return
 
 
@@ -191,6 +198,9 @@ def advance_game(dt: float)
     handle_input(dt)
     let collision = advance_ball(dt)
 
+    if collision != CollisionType None
+        reset_acc_and_vel()
+
     if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Glass))
         bricks[collider_brick.x][collider_brick.y] = BrickType Empty
 
@@ -203,6 +213,9 @@ def advance_game(dt: float)
 
     if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Jump))
         ball.vel.y = -jump_vel
+
+    if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Bomb))
+        game_state = GameState Lose
 
     if (ball.pos.x > float(get_screen_width()))
         game_state = GameState Win
@@ -262,6 +275,9 @@ def draw_level
             if brick == BrickType Jump
                 draw_brick(int2(x,y), jump_texture)
 
+            if brick == BrickType Bomb
+                draw_brick(int2(x,y), bomb_texture)
+
 
 def draw_debug_brick(p: int2; color)
     let px = float(p.x) * brick_size
@@ -297,6 +313,8 @@ def init_level(level: int)
         init_level_4()
     elif (level == 5)
         init_level_5()
+    elif (level == 6)
+        init_level_6()
 
 
 def set_ball_pos(pos: int2)
@@ -432,6 +450,46 @@ def init_level_5
     lay_brick_h(14,5,8, BrickType Wall)
     lay_brick_h(14,9,11, BrickType Glass)
     lay_brick_h(14,12,12, BrickType Jump)
+
+
+def init_level_6
+    reset_level()
+
+    set_ball_pos(int2(16,2))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_h(2,2,2,BrickType Wall)
+
+    lay_brick_h(4,6,8,BrickType Wall)
+    lay_brick_h(4,10,12,BrickType Wall)
+    lay_brick_h(4,14,19,BrickType Wall)
+
+    lay_brick_h(5,7,8,BrickType Wall)
+    lay_brick_h(5,10,12,BrickType Wall)
+    lay_brick_h(5,14,19,BrickType Wall)
+
+    lay_brick_h(5,9,9,BrickType Bomb)
+    lay_brick_h(5,13,13,BrickType Bomb)
+
+    lay_brick_h(8,4,6,BrickType Wall)
+    lay_brick_h(8,7,7,BrickType ArrowRight)
+
+    lay_brick_h(9,2,4,BrickType Bomb)
+    lay_brick_h(9,5,8,BrickType Wall)
+    lay_brick_h(9,9,15,BrickType Bomb)
+
+    lay_brick_h(10,2,2,BrickType Wall)
+    lay_brick_h(12,7,20,BrickType Wall)
+
+    lay_brick_h(14,4,4,BrickType ArrowRight)
+
+    lay_brick_v(20,1,12,BrickType Wall)
+
+
+
+
 
 
 
