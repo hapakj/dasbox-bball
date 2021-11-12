@@ -29,11 +29,17 @@ struct Ball
     vel: float2 = float2(0.0, 0.0)
     radius: float = 5.0
 
+
+struct Particle
+    pos: float2
+    life: int = 0
+
 var
     ball: Ball = Ball()
     acc: float2
 
     bricks: array<array<BrickType>>
+    particles: array<Particle>
 
     act_brick: int2
     next_brick: int2
@@ -71,6 +77,12 @@ let
     level_count = 15
     first_level = 1
 
+    particle_count = 32
+
+def reset_particles
+    particles |> resize(particle_count)
+    for p in particles
+        p.life = 0
     
 def reset_level
     bricks |> resize(level_width)
@@ -79,6 +91,8 @@ def reset_level
 
         for brick in col
             brick = BrickType Empty
+
+    reset_particles()
 
     ball.vel = float2(0.0)
     ball.pos = float2(0.0)
@@ -205,6 +219,19 @@ def apply_arrow(dir: float)
     ball.vel.x = dir*arrow_vel
     acc = float2(0.0)
 
+def update_particles
+    var dead_particle = -1
+
+    for p_id in range(0,particle_count)
+        if particles[p_id].life > 0
+            particles[p_id].life--
+        
+        if particles[p_id].life == 0
+            dead_particle = p_id
+
+    if dead_particle != -1
+        particles[dead_particle].pos = ball.pos
+        particles[dead_particle].life = particle_count
 
 def advance_game(dt: float)
     handle_input(dt)
@@ -241,6 +268,9 @@ def advance_game(dt: float)
 
     if (ball.pos.y > float(get_screen_height()))
         game_state = GameState Lose
+
+    update_particles()
+    return
 
 [export]
 def act(dt: float)
@@ -321,9 +351,22 @@ def draw_debug_brick(p: int2; color)
     return
 
 
+def draw_particles
+    enable_alpha_blend()
+
+    for p in particles
+        let t = float(p.life) / float(particle_count)
+
+        fill_circle(p.pos.x, p.pos.y,  t * ball.radius, make_color(t, 2.0 * max(t - 0.5, 0.0), 0.0, t))
+
+    disable_alpha_blend()
+
+
 [export]
 def draw
     draw_level()
+
+    draw_particles()
 
     // draw ball
     fill_circle(ball.pos.x, ball.pos.y,  ball.radius, ball_color)
