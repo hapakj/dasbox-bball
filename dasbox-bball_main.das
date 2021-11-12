@@ -62,6 +62,7 @@ let
 
     acc_x: float = 1000.0
     max_vel_x:float = 300.0
+    max_vel_y:float = 1.5 * default_vel_y
 
     climb_vel_y = -450.0
     climb_vel_x = 1.5 * max_vel_x
@@ -74,7 +75,7 @@ let
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 18
+    level_count = 20
     first_level = 1
 
     particle_count = 32
@@ -169,7 +170,11 @@ def safe_brick_type(b : int2)
 def advance_ball(dt: float)
     act_brick = int2(ball.pos.x / brick_size, ball.pos.y / brick_size)
 
-    let next_vel = ball.vel + dt * acc
+    var next_vel = ball.vel + dt * acc
+
+    if next_vel.y > max_vel_y
+        next_vel.y = max_vel_y
+
     let next_pos = ball.pos + dt * next_vel
 
     next_brick = int2(next_pos.x / brick_size, next_pos.y / brick_size)
@@ -210,7 +215,7 @@ def advance_ball(dt: float)
         ball.vel.y = -default_vel_y
 
     if collision == CollisionType Bottom
-        ball.vel.y = abs(ball.vel.y)
+        ball.vel.y = default_vel_y
 
     if collision == CollisionType Left
         ball.vel.x = abs(ball.vel.x)
@@ -424,6 +429,10 @@ def init_level(level: int)
         init_level_17()
     elif (level == 18)
         init_level_18()
+    elif (level == 19)
+        init_level_19()
+    elif (level == 20)
+        init_level_20()
 
 
 def set_ball_pos(pos: int2)
@@ -981,6 +990,73 @@ def init_level_18
     lay_brick_h(7,9,BrickType Jump)
 
     lay_brick_h(3,10,BrickType ArrowRight)
+
+
+def init_level_19
+    reset_level()
+
+    set_ball_pos(int2(2,2))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(4,1,11,BrickType Wall)
+    lay_brick_v(12,5,15,BrickType Wall)
+    lay_brick_v(19,4,6,BrickType Glass)
+    lay_brick_v(19,8,9,BrickType Wall)
+    lay_brick_v(20,1,6,BrickType Wall)
+    lay_brick_v(20,8,15,BrickType Wall)
+
+    lay_brick_h(4,2,3,BrickType Glass)
+    lay_brick_h(14,5,7,BrickType Wall)
+
+    lay_brick_h(13,9,BrickType Jump)
+    lay_brick_h(10,8,BrickType Jump)
+    lay_brick_h(7,8,BrickType Jump)
+
+    lay_brick_h(7,16,BrickType Jump)
+    lay_brick_h(7,19,BrickType ArrowRight)
+
+
+def init_level_20
+    reset_level()
+
+    set_ball_pos(int2(2,8))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(20,1,13,BrickType Wall)  
+    lay_brick_v(5,4,15,BrickType Wall)
+    lay_brick_v(18,10,14,BrickType Glass)
+
+    lay_brick_h(13,2,4,BrickType Glass)
+    lay_brick_h(12,2,4,BrickType Glass)
+
+    lay_brick_h(4,8,15,BrickType Wall)
+    lay_brick_h(4,18,19,BrickType Glass)
+
+    lay_brick_h(5,19,BrickType ArrowLeft)
+
+    lay_brick_h(7,6,9,BrickType Bomb)
+    lay_brick_h(7,13,19,BrickType Bomb)
+
+    lay_brick_h(10,10,12,BrickType Glass)
+    lay_brick_h(10,15,15,BrickType Glass)
+    lay_brick_h(10,17,18,BrickType Glass)
+
+    lay_brick_h(13,19,BrickType Bomb)
+
+    lay_brick_h(14,6,BrickType ArrowRight)
+    lay_brick_h(14,10,13,BrickType Glass)
+    lay_brick_h(14,15,BrickType Glass)
+    lay_brick_h(14,18,BrickType Glass)
+
+    lay_brick_h(15,9,BrickType Jump)
+    lay_brick_h(15,20,BrickType Wall)
+
+
+
 
     
 
