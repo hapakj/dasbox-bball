@@ -40,7 +40,7 @@ var
 
 let
     ball_color = make_color(0.7,0.7,1.0)
-    default_vel_y: float = 700.0
+    default_vel_y: float = 600.0
 
     acc_x: float = 1000.0
     max_vel_x:float = 500.0
