@@ -61,14 +61,14 @@ let
     climb_vel_x = 1.5 * max_vel_x
 
     arrow_vel = 1000.0
-    jump_vel = 1000.0
+    jump_vel = 900.0
 
     brick_size: float = 60.0
 
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 8
+    level_count = 10
     first_level = 1
 
     
@@ -350,6 +350,10 @@ def init_level(level: int)
         init_level_7()
     elif (level == 8)
         init_level_8()
+    elif (level == 9)
+        init_level_9()
+    elif (level == 10)
+        init_level_10()
 
 
 def set_ball_pos(pos: int2)
@@ -574,7 +578,67 @@ def init_level_8
     lay_brick_v(20,14,15,BrickType Wall)
 
 
+def init_level_9
+    reset_level()
+
+    set_ball_pos(int2(5,10))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_h(15,5,6,BrickType Jump)
+
+    lay_brick_h(12,2,3,BrickType Wall)
+    lay_brick_h(11,2,3,BrickType Wall)
+    lay_brick_h(10,2,3,BrickType Wall)
+    lay_brick_h(9,2,4,BrickType Wall)
+    lay_brick_h(8,2,2,BrickType Wall)
+    lay_brick_h(8,3,3,BrickType Jump)
+    lay_brick_h(8,4,5,BrickType Wall)
+
+    lay_brick_h(11,7,11,BrickType Wall)
+    lay_brick_h(10,9,11,BrickType Wall)
+    lay_brick_h(10,14,16,BrickType Wall)
+
+    lay_brick_h(10,18,18,BrickType Jump)
+
+    lay_brick_v(20,1,3,BrickType Wall)
+    lay_brick_v(20,5,15,BrickType Wall)
+
+    lay_brick_h(7,5,7,BrickType Wall)
+    lay_brick_h(7,8,8,BrickType Bomb)
+    lay_brick_h(7,9,9,BrickType Glass)
+
+    lay_brick_h(7,10,16,BrickType Wall)
+    lay_brick_h(6,12,16,BrickType Wall)
+
+    lay_brick_h(4,5,5,BrickType ArrowRight)
 
 
+def init_level_10
+    reset_level()
 
+    set_ball_pos(int2(18,5))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(20,1,13,BrickType Wall)
+    lay_brick_v(20,15,15,BrickType Wall)
+
+    lay_brick_h(12,17,19,BrickType Bomb)
+
+    lay_brick_h(11,17,19,BrickType Glass)
+    lay_brick_h(10,17,19,BrickType Glass)
+    lay_brick_h(9,17,19,BrickType Glass)
+
+    lay_brick_v(16,4,12,BrickType Wall)
+    lay_brick_v(15,4,5,BrickType Wall)
+
+    lay_brick_v(12,4,5,BrickType Wall)
+    lay_brick_v(11,4,5,BrickType Wall)
+
+    lay_brick_h(5,13,14,BrickType Bomb)
+
+    lay_brick_h(14,7,7,BrickType ArrowRight)
 
