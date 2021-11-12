@@ -56,6 +56,8 @@ let
     acc_x: float = 1000.0
     max_vel_x:float = 500.0
 
+    climb_vel_y = -500.0
+
     arrow_vel = 1500.0
     jump_vel = 1000.0
 
@@ -64,7 +66,7 @@ let
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 6
+    level_count = 7
     first_level = 1
 
     
@@ -201,6 +203,15 @@ def advance_game(dt: float)
     if collision != CollisionType None
         reset_acc_and_vel()
 
+    if get_key(VK_LEFT) && get_key(VK_RIGHT)
+        if collision == CollisionType Left
+            ball.vel.x = max_vel_x
+            ball.vel.y = climb_vel_y
+        if collision == CollisionType Right
+            ball.vel.x = -max_vel_x
+            ball.vel.y = climb_vel_y
+
+
     if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Glass))
         bricks[collider_brick.x][collider_brick.y] = BrickType Empty
 
@@ -315,6 +326,8 @@ def init_level(level: int)
         init_level_5()
     elif (level == 6)
         init_level_6()
+    elif (level == 7)
+        init_level_7()
 
 
 def set_ball_pos(pos: int2)
@@ -487,7 +500,29 @@ def init_level_6
 
     lay_brick_v(20,1,12,BrickType Wall)
 
+def init_level_7
+    reset_level()
 
+    set_ball_pos(int2(3,13))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_h(15,1,5,BrickType Wall)
+    lay_brick_v(5,11,15,BrickType Wall)
+
+    lay_brick_h(11,5,7,BrickType Wall)
+    lay_brick_h(11,6, 15,BrickType Glass)
+    lay_brick_h(11,17,18,BrickType Jump)
+
+    lay_brick_h(8,1,15,BrickType Wall)
+    lay_brick_h(7,1,6,BrickType Wall)
+
+    lay_brick_v(20,4,15,BrickType Wall)
+
+    lay_brick_h(4,5,8,BrickType Wall)
+    lay_brick_h(4,10,13,BrickType Wall)
+    lay_brick_h(4,16,20,BrickType Wall)
 
 
 
