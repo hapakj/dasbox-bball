@@ -74,7 +74,7 @@ let
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 15
+    level_count = 18
     first_level = 1
 
     particle_count = 32
@@ -103,21 +103,30 @@ def lay_brick_h(var y: int; var x1: int; var x2: int; brick_type: BrickType)
     y -= 1
     x1 -= 1
     for x in range(x1, x2)
+        if (bricks[x][y] != BrickType Empty) && (bricks[x][y] != brick_type)
+            panic("brick type mismatch")
         bricks[x][y] = brick_type
+
+def lay_brick_h(y; x; brick_type)
+    lay_brick_h(y, x, x, brick_type)
+
 
 def lay_brick_v(var x: int; var y1: int; var y2: int; brick_type: BrickType)
     x -= 1
     y1 -= 1
     for y in range(y1, y2)
+        if (bricks[x][y] != BrickType Empty) && (bricks[x][y] != brick_type)
+            panic("brick type mismatch")
         bricks[x][y] = brick_type
 
-
+def lay_brick_v(x; y; brick_type)
+    lay_brick_v(x, y, y, brick_type)
 
 // 'initialize' runs once when game starts and every hot-reload
 [export]
 def initialize
     set_resolution(int(brick_size) * level_width, int(brick_size) * level_height)
-    set_window_title("dasbox-bball")
+    set_window_title("Dasbox Bball")
 
     wall_texture <- create_managed_image("wall.png")
     glass_texture <- create_managed_image("glass.png")
@@ -375,6 +384,8 @@ def draw
 
 
 def init_level(level: int)
+    set_window_title("Dasbox Bball - Level " + string(level))
+
     if (level == 0)
         init_level_test()
     elif (level == 1)
@@ -407,6 +418,12 @@ def init_level(level: int)
         init_level_14()
     elif (level == 15)
         init_level_15()
+    elif (level == 16)
+        init_level_16()
+    elif (level == 17)
+        init_level_17()
+    elif (level == 18)
+        init_level_18()
 
 
 def set_ball_pos(pos: int2)
@@ -592,7 +609,7 @@ def init_level_7
     lay_brick_v(5,11,15,BrickType Wall)
 
     lay_brick_h(11,5,7,BrickType Wall)
-    lay_brick_h(11,6, 15,BrickType Glass)
+    lay_brick_h(11,8,15,BrickType Glass)
     lay_brick_h(11,17,18,BrickType Jump)
 
     lay_brick_h(8,1,15,BrickType Wall)
@@ -851,6 +868,119 @@ def init_level_15
 
     lay_brick_h(10,19,19,BrickType Wall)
     lay_brick_h(10,18,18,BrickType ArrowLeft)
+
+
+def init_level_16
+    reset_level()
+
+    set_ball_pos(int2(2,2))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(20,1,9,BrickType Wall)
+    lay_brick_v(20,12,15,BrickType Wall)
+
+    lay_brick_h(4,6,6,BrickType Wall)
+
+    lay_brick_h(5,1,7,BrickType Wall)
+    lay_brick_h(5,10,10,BrickType Wall)
+    lay_brick_h(5,12,12,BrickType Wall)
+    lay_brick_h(5,15,16,BrickType Wall)
+
+    lay_brick_h(6,7,7,BrickType Wall)
+    lay_brick_h(6,8,9,BrickType Bomb)
+    lay_brick_h(6,10,10,BrickType Wall)
+    lay_brick_h(6,11,11,BrickType Bomb)
+    lay_brick_h(6,12,12,BrickType Wall)
+    lay_brick_h(6,13,14,BrickType Bomb)
+    lay_brick_h(6,15,15,BrickType Wall)
+
+    lay_brick_h(9,5,5,BrickType Glass)
+    lay_brick_h(9,8,8,BrickType Glass)
+    lay_brick_h(9,10,11,BrickType Glass)
+    lay_brick_h(9,14,14,BrickType Glass)
+    lay_brick_h(9,16,20,BrickType Wall)
+
+    lay_brick_v(16,9,13,BrickType Wall)
+
+    lay_brick_h(14,3,3,BrickType ArrowRight)
+
+
+def init_level_17
+    reset_level()
+
+    set_ball_pos(int2(16,13))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_h(15,1,5,BrickType Wall)
+    lay_brick_h(15,7,8,BrickType Glass)
+    lay_brick_h(15,11,11,BrickType Glass)
+    lay_brick_h(15,13,13,BrickType Glass)
+    lay_brick_h(15,14,20,BrickType Wall)
+
+    lay_brick_h(14,3,3,BrickType Jump)
+
+    lay_brick_v(20,1,12,BrickType Wall)
+    lay_brick_v(19,10,14,BrickType Glass)
+    lay_brick_v(16,5,10,BrickType Wall)
+
+    lay_brick_h(10,5,7,BrickType Wall)
+
+    lay_brick_h(10,10,10,BrickType Jump)
+    lay_brick_h(7,7,7,BrickType Jump)
+
+    lay_brick_h(4,4,4,BrickType ArrowRight)
+
+
+def init_level_18
+    reset_level()
+
+    set_ball_pos(int2(2,2))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(20,1,3,BrickType Wall)
+    lay_brick_v(20,6,15,BrickType Wall)
+
+    lay_brick_v(6,1,12,BrickType Wall)
+
+    lay_brick_h(4,2,3,BrickType Wall)
+    lay_brick_h(4,4,4,BrickType Glass)
+    lay_brick_h(4,5,5,BrickType Wall)
+
+    lay_brick_h(8,2,2,BrickType Wall)
+    lay_brick_h(8,3,3,BrickType Glass)
+    lay_brick_h(8,4,4,BrickType Bomb)
+    lay_brick_h(8,5,11,BrickType Wall)
+
+    lay_brick_h(12,2,2,BrickType Wall)
+    lay_brick_h(12,3,3,BrickType Bomb)
+    lay_brick_h(12,4,4,BrickType Glass)
+    lay_brick_h(12,5,6,BrickType Wall)
+
+    lay_brick_h(15,2,5,BrickType Glass)
+    lay_brick_h(15,6,9,BrickType Wall)
+    lay_brick_h(14,8,9,BrickType Wall)
+    lay_brick_v(10,14,15,BrickType Jump)
+
+    lay_brick_h(11,7, BrickType ArrowRight)
+
+    lay_brick_h(11,18,19,BrickType Wall)
+
+    lay_brick_h(10,11,12,BrickType Wall)
+    lay_brick_h(10,14,15,BrickType Wall)
+    lay_brick_h(10,18,19,BrickType Wall)
+
+    lay_brick_h(9,11,12,BrickType Wall)
+    lay_brick_h(9,14,BrickType Jump)
+
+    lay_brick_h(7,9,BrickType Jump)
+
+    lay_brick_h(3,10,BrickType ArrowRight)
 
     
 
