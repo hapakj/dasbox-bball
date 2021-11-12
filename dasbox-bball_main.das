@@ -7,6 +7,7 @@ enum BrickType
     Wall
     Glass
     ArrowRight
+    Jump
 
 enum CollisionType
     None
@@ -42,23 +43,26 @@ var
     wall_texture: ImageHandle
     glass_texture: ImageHandle
     arrow_texture: ImageHandle
+    jump_texture: ImageHandle
 
 let
     ball_color = make_color(0.7,0.7,1.0)
     default_vel_y: float = 600.0
+
     default_acc: float2 = float2(0.0, 1800.0)
 
     acc_x: float = 1000.0
     max_vel_x:float = 500.0
 
     arrow_vel = 1500.0
+    jump_vel = 1000.0
 
     brick_size: float = 60.0
 
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 3
+    level_count = 5
     first_level = 1
 
     
@@ -98,6 +102,7 @@ def initialize
     wall_texture <- create_managed_image("wall.png")
     glass_texture <- create_managed_image("glass.png")
     arrow_texture <- create_managed_image("arrow.png")
+    jump_texture <- create_managed_image("jump.png")
     return
 
 
@@ -196,6 +201,9 @@ def advance_game(dt: float)
         ball.vel.x = arrow_vel
         acc = float2(0.0)
 
+    if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Jump))
+        ball.vel.y = -jump_vel
+
     if (ball.pos.x > float(get_screen_width()))
         game_state = GameState Win
 
@@ -251,6 +259,9 @@ def draw_level
             if brick == BrickType ArrowRight
                 draw_brick(int2(x,y), arrow_texture)
 
+            if brick == BrickType Jump
+                draw_brick(int2(x,y), jump_texture)
+
 
 def draw_debug_brick(p: int2; color)
     let px = float(p.x) * brick_size
@@ -282,6 +293,10 @@ def init_level(level: int)
         init_level_2()
     elif (level == 3)
         init_level_3()
+    elif (level == 4)
+        init_level_4()
+    elif (level == 5)
+        init_level_5()
 
 
 def set_ball_pos(pos: int2)
@@ -362,4 +377,61 @@ def init_level_3
 
     lay_brick_h(11,15,15,BrickType Glass)
     lay_brick_h(12,15,15,BrickType ArrowRight)
+
+
+def init_level_4
+    reset_level()
+
+    set_ball_pos(int2(6,10))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_h(12,2,13,BrickType Wall)
+    lay_brick_h(13,2,6,BrickType Wall)
+    lay_brick_h(14,2,6,BrickType Wall)
+    lay_brick_h(15,2,6,BrickType Wall)
+
+    lay_brick_h(8,10,12,BrickType Wall)
+    lay_brick_h(8,15,20,BrickType Wall)
+
+    lay_brick_v(20,1,5,BrickType Wall)
+    lay_brick_v(20,8,15,BrickType Wall)
+
+    lay_brick_h(11,8,8,BrickType Jump)
+
+
+def init_level_5
+    reset_level()
+
+    set_ball_pos(int2(3,2))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_h(4,2,4,BrickType Wall)
+    lay_brick_h(5,2,4,BrickType Wall)
+    lay_brick_h(6,2,4,BrickType Wall)
+
+    lay_brick_h(4,5,10,BrickType Glass)
+    lay_brick_h(5,5,10,BrickType Glass)
+    lay_brick_h(6,5,10,BrickType Glass)
+
+    lay_brick_h(4,11,20,BrickType Wall)
+    lay_brick_h(5,11,20,BrickType Wall)
+    lay_brick_h(6,11,20,BrickType Wall)
+
+    lay_brick_v(20,1,9,BrickType Wall)
+    lay_brick_v(11,7,10,BrickType Wall)
+
+    lay_brick_h(12,14,20,BrickType Wall)
+    lay_brick_h(13,14,20,BrickType Wall)
+    lay_brick_h(14,14,20,BrickType Wall)
+    lay_brick_h(15,14,20,BrickType Wall)
+    
+    lay_brick_h(14,5,8, BrickType Wall)
+    lay_brick_h(14,9,11, BrickType Glass)
+    lay_brick_h(14,12,12, BrickType Jump)
+
+
 
