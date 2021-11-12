@@ -38,6 +38,9 @@ var
     game_state: GameState = GameState Init
     act_level: int
 
+    wall_texture: ImageHandle
+    glass_texture: ImageHandle
+
 let
     ball_color = make_color(0.7,0.7,1.0)
     default_vel_y: float = 600.0
@@ -85,7 +88,8 @@ def initialize
     set_resolution(int(brick_size) * level_width, int(brick_size) * level_height)
     set_window_title("dasbox-bball")
 
-    init_level_1()
+    wall_texture <- create_managed_image("wall.png")
+    glass_texture <- create_managed_image("glass.png")
     return
 
 
@@ -205,19 +209,27 @@ def act(dt: float)
 
     return
 
+
+def draw_brick(p: int2; image)
+    let px1 = float(p.x) * brick_size + 1.0
+    let py1 = float(p.y) * brick_size + 1.0
+
+    let px2 = px1 + brick_size - 2.0
+    let py2 = py1 + brick_size - 2.0
+
+    draw_quad(image, float2(px1,py1), float2(px1,py2), float2(px2, py2), float2(px2, py1), 0xFFFFFFFF)
+
+
 def draw_level
     for x in range(0, level_width)
         for y in range(0, level_height)
             let brick = bricks[x][y]
 
-            let px = float(x) * brick_size
-            let py = float(y) * brick_size
-
             if brick == BrickType Wall
-                fill_rect(px+1.0, py+1.0, brick_size-2.0, brick_size-2.0, make_color(0.6,0.0,0.0))
+                draw_brick(int2(x,y), wall_texture)
 
             if brick == BrickType Glass
-                fill_rect(px+1.0, py+1.0, brick_size-2.0, brick_size-2.0, make_color(0.6,0.6,0.6))
+                draw_brick(int2(x,y), glass_texture)
 
 
 def draw_debug_brick(p: int2; color)
