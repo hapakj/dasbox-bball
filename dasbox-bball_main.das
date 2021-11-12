@@ -14,9 +14,15 @@ enum CollisionType
     Top
     Bottom
 
+enum GameState
+    Init
+    InGame
+    Win
+    Lose
+
 struct Ball
-    pos: float2 = float2(100.0, 600.0)
-    vel: float2 = float2(0.0, -0.5)
+    pos: float2 = float2(0.0, 0.0)
+    vel: float2 = float2(0.0, 0.0)
     radius: float = 5.0
 
 var
@@ -27,6 +33,10 @@ var
 
     act_brick: int2
     next_brick: int2
+    collider_brick: int2
+
+    game_state: GameState = GameState Init
+    act_level: int
 
 let
     ball_color = make_color(0.7,0.7,1.0)
@@ -40,14 +50,20 @@ let
     level_width: int = 20
     level_height: int = 15
 
+    level_count = 2
+    first_level = 1
+
     
-def clear_level
+def reset_level
     bricks |> resize(level_width)
     for col in bricks
         col |> resize(level_height)
 
         for brick in col
             brick = BrickType Empty
+
+    ball.vel = float2(0.0)
+    ball.pos = float2(0.0)
 
 def lay_brick_h(var y: int; var x1: int; var x2: int; brick_type: BrickType)
     y -= 1
@@ -96,16 +112,15 @@ def safe_brick_type(b : int2)
         return bricks[b.x][b.y]
     return BrickType Empty
 
-[export]
-def act(dt: float)
-    handle_input(dt)
 
+def advance_ball(dt: float)
     act_brick = int2(ball.pos.x / brick_size, ball.pos.y / brick_size)
 
     let next_vel = ball.vel + dt * acc
     let next_pos = ball.pos + dt * next_vel
 
     next_brick = int2(next_pos.x / brick_size, next_pos.y / brick_size)
+    collider_brick = next_brick
 
     var collision = CollisionType None
 
@@ -150,8 +165,45 @@ def act(dt: float)
     if collision == CollisionType Right
         ball.vel.x = -abs(ball.vel.x)
     
-    return
+    return collision
 
+
+def advance_game(dt: float)
+    handle_input(dt)
+    let collision = advance_ball(dt)
+
+    if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Glass))
+        bricks[collider_brick.x][collider_brick.y] = BrickType Empty
+
+    if (ball.pos.x > float(get_screen_width()))
+        game_state = GameState Win
+
+    if (ball.pos.y > float(get_screen_height()))
+        game_state = GameState Lose
+
+[export]
+def act(dt: float)
+    if game_state == GameState InGame
+        advance_game(dt)
+
+    elif game_state == GameState Init
+        act_level = first_level
+        init_level(act_level)
+        game_state = GameState InGame
+
+    elif game_state == GameState Win
+        act_level++;
+        if (act_level > level_count)
+            act_level = first_level
+
+        init_level(act_level)
+        game_state = GameState InGame
+
+    elif game_state == GameState Lose
+        init_level(act_level)
+        game_state = GameState InGame
+
+    return
 
 def draw_level
     for x in range(0, level_width)
@@ -189,8 +241,20 @@ def draw
     return
 
 
+def init_level(level: int)
+    if (level == 0)
+        init_level_test()
+    elif (level == 1)
+        init_level_1()
+    elif (level == 2)
+        init_level_2()
+
+
+def set_ball_pos(pos: int2)
+    ball.pos = float2((float(pos.x-1) + 0.5) * brick_size, (float(pos.y-1) + 0.5) * brick_size)
+
 def init_level_test
-    clear_level()
+    reset_level()
 
     lay_brick_h(1,1,20,BrickType Wall)
     lay_brick_h(15,1,20,BrickType Wall)
@@ -198,9 +262,10 @@ def init_level_test
     lay_brick_v(1,1,15,BrickType Wall)
     lay_brick_v(20,1,15,BrickType Wall)
 
-
 def init_level_1
-    clear_level()
+    reset_level()
+
+    set_ball_pos(int2(3,11))
 
     lay_brick_h(1,1,20,BrickType Wall)
     lay_brick_h(15,1,20,BrickType Wall)
@@ -216,3 +281,28 @@ def init_level_1
     lay_brick_h(10,18,20,BrickType Wall)
 
     lay_brick_h(10,16,17,BrickType Glass)
+
+
+def init_level_2
+    reset_level()
+
+    set_ball_pos(int2(3,9))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(2,11,15,BrickType Wall)
+    lay_brick_v(3,11,15,BrickType Wall)
+    lay_brick_v(4,11,15,BrickType Wall)
+
+    lay_brick_v(7,12,15,BrickType Wall)
+    lay_brick_v(8,12,15,BrickType Wall)
+
+    lay_brick_h(12,9,10,BrickType Wall)
+    lay_brick_h(11,10,13,BrickType Wall)
+    lay_brick_h(11,15,20,BrickType Wall)
+
+    lay_brick_v(20,1,8,BrickType Wall)
+    lay_brick_v(20,11,15,BrickType Wall)
+
+
