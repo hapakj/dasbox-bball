@@ -7,6 +7,7 @@ enum BrickType
     Wall
     Glass
     ArrowRight
+    ArrowLeft
     Jump
     Bomb
 
@@ -54,11 +55,12 @@ let
     default_acc: float2 = float2(0.0, 1800.0)
 
     acc_x: float = 1000.0
-    max_vel_x:float = 500.0
+    max_vel_x:float = 300.0
 
     climb_vel_y = -500.0
+    climb_vel_x = 1.5 * max_vel_x
 
-    arrow_vel = 1500.0
+    arrow_vel = 1000.0
     jump_vel = 1000.0
 
     brick_size: float = 60.0
@@ -66,7 +68,7 @@ let
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 7
+    level_count = 8
     first_level = 1
 
     
@@ -129,7 +131,7 @@ def handle_input(dt: float)
     if get_key(VK_RIGHT)
         ball.vel.x += dt * acc_x
 
-    if get_key(VK_LEFT) || get_key(VK_RIGHT)
+    if get_key(VK_LEFT) ^^ get_key(VK_RIGHT)
         reset_acc_and_vel()
 
     return
@@ -196,6 +198,14 @@ def advance_ball(dt: float)
     return collision
 
 
+def apply_arrow(dir: float)
+    ball.pos.x = (float(collider_brick.x) + 0.5) * brick_size + dir * (brick_size * 0.5 + 2.0 * ball.radius)
+    ball.pos.y = (float(collider_brick.y) + 0.5) * brick_size
+    ball.vel.y = 0.0
+    ball.vel.x = dir*arrow_vel
+    acc = float2(0.0)
+
+
 def advance_game(dt: float)
     handle_input(dt)
     let collision = advance_ball(dt)
@@ -205,22 +215,20 @@ def advance_game(dt: float)
 
     if get_key(VK_LEFT) && get_key(VK_RIGHT)
         if collision == CollisionType Left
-            ball.vel.x = max_vel_x
+            ball.vel.x = climb_vel_x
             ball.vel.y = climb_vel_y
         if collision == CollisionType Right
-            ball.vel.x = -max_vel_x
+            ball.vel.x = -climb_vel_x
             ball.vel.y = climb_vel_y
-
 
     if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Glass))
         bricks[collider_brick.x][collider_brick.y] = BrickType Empty
 
     if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType ArrowRight))
-        ball.pos.x = float(collider_brick.x + 1) * brick_size + 2.0 * ball.radius
-        ball.pos.y = (float(collider_brick.y) + 0.5) * brick_size
-        ball.vel.y = 0.0
-        ball.vel.x = arrow_vel
-        acc = float2(0.0)
+        apply_arrow(1.0)
+
+    if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType ArrowLeft))
+        apply_arrow(-1.0)
 
     if ((collision == CollisionType Top) && (safe_brick_type(collider_brick) == BrickType Jump))
         ball.vel.y = -jump_vel
@@ -268,6 +276,15 @@ def draw_brick(p: int2; image)
 
     draw_quad(image, float2(px1,py1), float2(px1,py2), float2(px2, py2), float2(px2, py1), 0xFFFFFFFF)
 
+def draw_brick_flipped(p: int2; image)
+    let px1 = float(p.x) * brick_size + 1.0
+    let py1 = float(p.y) * brick_size + 1.0
+
+    let px2 = px1 + brick_size - 2.0
+    let py2 = py1 + brick_size - 2.0
+
+    draw_quad(image, float2(px2,py1), float2(px2,py2), float2(px1, py2), float2(px1, py1), 0xFFFFFFFF)
+
 
 def draw_level
     for x in range(0, level_width)
@@ -282,6 +299,9 @@ def draw_level
 
             if brick == BrickType ArrowRight
                 draw_brick(int2(x,y), arrow_texture)
+
+            if brick == BrickType ArrowLeft
+                draw_brick_flipped(int2(x,y), arrow_texture)
 
             if brick == BrickType Jump
                 draw_brick(int2(x,y), jump_texture)
@@ -328,6 +348,8 @@ def init_level(level: int)
         init_level_6()
     elif (level == 7)
         init_level_7()
+    elif (level == 8)
+        init_level_8()
 
 
 def set_ball_pos(pos: int2)
@@ -500,6 +522,7 @@ def init_level_6
 
     lay_brick_v(20,1,12,BrickType Wall)
 
+
 def init_level_7
     reset_level()
 
@@ -523,6 +546,33 @@ def init_level_7
     lay_brick_h(4,5,8,BrickType Wall)
     lay_brick_h(4,10,13,BrickType Wall)
     lay_brick_h(4,16,20,BrickType Wall)
+
+
+def init_level_8
+    reset_level()
+
+    set_ball_pos(int2(3,2))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_h(4,2,4,BrickType Wall)
+    lay_brick_h(4,7,7,BrickType Wall)
+    lay_brick_h(4,11,15,BrickType Wall)
+
+    lay_brick_h(5,2,4,BrickType Wall)
+    lay_brick_h(5,6,8,BrickType Wall)
+    lay_brick_h(5,10,12,BrickType Wall)
+
+    lay_brick_h(8,2,14,BrickType Bomb)
+
+    lay_brick_h(10,17,17,BrickType ArrowLeft)
+    lay_brick_h(13,6,6,BrickType ArrowRight)
+
+    lay_brick_v(20,1,12,BrickType Wall)
+    lay_brick_v(19,12,12,BrickType Wall)
+    lay_brick_v(20,14,15,BrickType Wall)
+
 
 
 
