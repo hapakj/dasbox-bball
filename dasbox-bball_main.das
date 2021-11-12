@@ -49,7 +49,7 @@ var
     bomb_texture: ImageHandle
 
 let
-    ball_color = make_color(0.7,0.7,1.0)
+    ball_color = make_color(1.0,1.0,1.0)
 
     default_vel_y: float = 600.0
     default_acc: float2 = float2(0.0, 1800.0)
@@ -57,7 +57,7 @@ let
     acc_x: float = 1000.0
     max_vel_x:float = 300.0
 
-    climb_vel_y = -500.0
+    climb_vel_y = -450.0
     climb_vel_x = 1.5 * max_vel_x
 
     arrow_vel = 1000.0
@@ -68,7 +68,7 @@ let
     level_width: int = 20
     level_height: int = 15
 
-    level_count = 13
+    level_count = 15
     first_level = 1
 
     
@@ -360,6 +360,10 @@ def init_level(level: int)
         init_level_12()
     elif (level == 13)
         init_level_13()
+    elif (level == 14)
+        init_level_14()
+    elif (level == 15)
+        init_level_15()
 
 
 def set_ball_pos(pos: int2)
@@ -739,4 +743,71 @@ def init_level_13
     lay_brick_h(15,17,20,BrickType Wall)
 
     lay_brick_v(3,12,14,BrickType Glass)
+
+
+def init_level_14
+    reset_level()
+
+    set_ball_pos(int2(18,2))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(20,1,12,BrickType Wall)
+    lay_brick_v(20,15,15,BrickType Wall)
+
+    lay_brick_h(4,15,20,BrickType Wall)
+    lay_brick_h(4,11,11,BrickType Wall)
+
+    lay_brick_h(5,8,12,BrickType Wall)
+    lay_brick_h(5,5,6,BrickType Wall)
+
+    lay_brick_h(5,7,7,BrickType Bomb)
+    lay_brick_h(7,12,18,BrickType Bomb)
+
+    lay_brick_v(6,10,15,BrickType Wall)
+    lay_brick_v(7,10,15,BrickType Wall)
+
+    lay_brick_h(15,18,18,BrickType Jump)
+    lay_brick_h(15,13,13,BrickType Jump)
+
+    lay_brick_v(13,14,14,BrickType Glass)
+    lay_brick_v(12,12,14,BrickType Glass)
+    lay_brick_v(11,11,12,BrickType Glass)
+
+
+def init_level_15
+    reset_level()
+
+    set_ball_pos(int2(3,6))
+
+    lay_brick_h(1,1,20,BrickType Wall)
+    lay_brick_v(1,1,15,BrickType Wall)
+
+    lay_brick_v(20,1,10,BrickType Wall)
+    lay_brick_v(20,13,15,BrickType Wall)
+
+    lay_brick_v(2,2,5,BrickType Wall)
+    lay_brick_h(8,1,6,BrickType Wall)
+
+    lay_brick_v(5,5,8,BrickType Wall)
+    lay_brick_v(6,5,8,BrickType Wall)
+    lay_brick_v(17,5,9,BrickType Wall)
+
+    lay_brick_h(9,2,16,BrickType Bomb)
+
+    lay_brick_h(5,7,9,BrickType Glass)
+    lay_brick_h(4,9,9,BrickType Glass)
+    lay_brick_h(4,11,12,BrickType Glass)
+    lay_brick_h(4,14,14,BrickType Glass)
+    lay_brick_h(4,16,17,BrickType Glass)
+
+    lay_brick_h(13,18,19,BrickType Glass)
+    lay_brick_h(14,16,19,BrickType Glass)
+    lay_brick_h(14,11,13,BrickType Glass)
+
+    lay_brick_h(10,19,19,BrickType Wall)
+    lay_brick_h(10,18,18,BrickType ArrowLeft)
+
+    
 
